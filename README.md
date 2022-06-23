@@ -20,6 +20,9 @@ Make sure python and postgresql is installed in the machine
  
  ## Setting up the application:
  
+ ` git clone git@github.com:Arihantawasthi/url-shortener.git `
+ ` cd url-shortener `
+ 
  Create Virtual Environment (Optional):
  ` virtualenv venv `
  
