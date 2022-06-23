@@ -36,8 +36,8 @@ Make sure python and postgresql is installed in the machine
  ```
  export FLASK_APP=application
  export FLASK_DEBUG=1
- export DATABASE_URL=postgres://<username>:<password>@localhost:5432/url_shortener
+ export DATABASE_URL=postgresql://<username>:<password>@localhost:5432/url_shortener
  ```
  
  ## Running the application
- ` flask run '
+ ` flask run `
