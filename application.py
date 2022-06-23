@@ -1,7 +1,9 @@
 import json
-from flask import Flask, request, jsonify
+from logging import raiseExceptions
+from flask import Flask, request, jsonify, abort
 from helpers import generate_url_code
 from config import db
+from sqlalchemy import exc
 
 app = Flask(__name__)
 
@@ -40,7 +42,7 @@ def update_url():
 
         # Updating new long url provided by the client
         db.execute("UPDATE link SET long_url=:long_url WHERE short_url=:short_url", 
-                {"long_url": new_long_url, "short_url": short_url})
+        {"long_url": new_long_url, "short_url": short_url}) 
         db.commit()
 
         response = {"message": "UPDATED", "code": "SUCCESS"}
@@ -48,3 +50,35 @@ def update_url():
     else:
         response = {"message": "Unsupported Media Type", "code": "FAILED"}
         return jsonify(response)
+
+
+# For Deleting an existing short url
+@app.route("/delete-url/<url_code>", methods=['DELETE'])
+def delete_url(url_code):
+    # Checking if url_code exists
+    query = db.execute("SELECT url_code FROM link WHERE url_code=:url_code",
+            {"url_code": url_code}).fetchone()
+    if not query:
+        abort(404)
+    
+    db.execute('DELETE FROM link WHERE url_code=:url_code', 
+            {"url_code": url_code})
+    db.commit()
+
+    return jsonify({"message": "URL Deleted", "code": "Success"})
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"message": "FAILURE", "type": "404 Not Found"})
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return jsonify({"message": "FAILURE", "type": "Internal Server Error"})
+
+@app.route("/")
+def index():
+    new_list = db.execute("SELECT * FROM link").fetchall()
+    for i in new_list:
+        print(i)
+    return "Hello"
